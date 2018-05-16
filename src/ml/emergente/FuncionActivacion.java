@@ -11,8 +11,39 @@ package ml.emergente;
  */
 public class FuncionActivacion {
     
+    private int tipo;
+    
     public FuncionActivacion(int tipoDeFuncion) {
-        System.out.println(tipoDeFuncion);
+        tipo = tipoDeFuncion;
+    }
+    
+    public float[] ejecutar(float[] inputs) {
+        float[] output = new float[inputs.length];
+        for (int i = 0; i < inputs.length; i++) {
+            switch (tipo) {
+                case 1: // Función sigmoide
+                    output[i] = 1/(1 + (float) Math.exp(-inputs[i]));
+                case 2: // Función tanh
+                    output[i] = (float) Math.tanh(inputs[i]);
+                case 3: // Función arctan.
+                    output[i] = (float) Math.atan(inputs[i]);
+                case 4: // Función Heaviside
+                    if (inputs[i] > 0) {
+                        output[i] = 1;
+                    } else if (inputs[i] < 0) {
+                        output[i] = 0;
+                    } else {
+                        output[i] = (float) 0.5;
+                    }
+                default:
+                    output[i] = 0;
+            }    
+        }
+        return output;
+    }
+    
+    public float[] derivada() {
+        return new float[1];
     }
     
 }
