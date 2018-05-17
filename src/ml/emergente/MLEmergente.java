@@ -5,6 +5,8 @@
  */
 package ml.emergente;
 
+import java.io.IOException;
+
 /**
  *
  * @author gtroncone
@@ -21,9 +23,25 @@ public class MLEmergente {
         this.red = new RedNeuronal();
     }
     
-    public static void main(String[] args) {
+    public static void main(String[] args)  {
+        // Localiza la data
+        String csvFile = "Data2.csv";
+        
         System.out.println("Bienvenido a Emergente ML.");
-        MLEmergente red = new MLEmergente();       
+        
+        // Crea lector
+        LectorCSV lector = new LectorCSV();
+        
+        // Lee el archivo
+        try {
+            lector.leerCSVSimple(csvFile);
+        }
+        catch (IOException ex) {
+        System.out.println (ex.toString());
+        System.out.println("Rayos, no encontró archivo csv ");
+        }
+        
+        //MLEmergente red = new MLEmergente();       
     }
     
 }
