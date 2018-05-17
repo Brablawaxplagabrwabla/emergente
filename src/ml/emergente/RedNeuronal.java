@@ -67,7 +67,7 @@ public class RedNeuronal {
         for (int i = 0; i < capas.length - 1; i++) {
             float[][] pesos = capas[i].getPesos();
             float[] biases = capas[i + 1].getBiases();
-            FuncionActivacion funcion = capas[i].getFuncion();
+            FuncionActivacion funcion = capas[i + 1].getFuncion();
             intermediario = sumaProducto(intermediario, pesos, biases);
             intermediario = funcion.ejecutar(intermediario);
         }
@@ -123,11 +123,8 @@ public class RedNeuronal {
     }
     
     public static void imprimir(float[] m) {
-        String result = "";
         for(int i = 0; i < m.length; i++) {
-            result += String.format("%11.2f", m[i]);
-            result += "\n";
+            System.out.println(m[i]);
         }
-        System.out.println(result);
     }
 }

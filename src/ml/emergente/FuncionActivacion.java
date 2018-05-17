@@ -23,10 +23,13 @@ public class FuncionActivacion {
             switch (tipo) {
                 case 1: // Función sigmoide
                     output[i] = 1/(1 + (float) Math.exp(-inputs[i]));
+                    break;
                 case 2: // Función tanh
                     output[i] = (float) Math.tanh(inputs[i]);
+                    break;
                 case 3: // Función arctan.
                     output[i] = (float) Math.atan(inputs[i]);
+                    break;
                 case 4: // Función Heaviside
                     if (inputs[i] > 0) {
                         output[i] = 1;
@@ -35,9 +38,10 @@ public class FuncionActivacion {
                     } else {
                         output[i] = (float) 0.5;
                     }
+                    break;
                 default:
                     output[i] = 0;
-            }    
+            }
         }
         return output;
     }
