@@ -69,10 +69,83 @@ public class RedNeuronal {
             float[] biases = capas[i + 1].getBiases();
             FuncionActivacion funcion = capas[i + 1].getFuncion();
             intermediario = sumaProducto(intermediario, pesos, biases);
+            for (int j = 0; j < capas[i].getNumNeuronas(); j++) {
+                capas[i].getNeuronas()[j].setPreActivacion(intermediario[j]);
+            }
             intermediario = funcion.ejecutar(intermediario);
+            for (int j = 0; j < capas[i].getNumNeuronas(); j++) {
+                capas[i].getNeuronas()[j].setSalida(intermediario[j]);
+            }
         }
         imprimir(intermediario);
         return intermediario;
+    }
+    
+    public void backPropagation(float[] inputs, float[] outputs, float[] esperados) {
+        float[][] deltaCapaExternaPesos = new float[capas[capas.length - 2].getNumNeuronas()][capas[capas.length - 1].getNumNeuronas()];
+        float[][] deltaCapaOcultaPesos = new float[capas[0].getNumNeuronas()][capas[capas.length - 2].getNumNeuronas()];
+        float[] deltaSesgoExterna = new float[capas[capas.length - 1].getNumNeuronas()];
+        float[] deltaSesgoOculta = new float[capas[capas.length - 2].getNumNeuronas()];
+        
+        float[] aux = capas[capas.length - 1].getFuncion().derivada(capas[capas.length - 1].getPreActivaciones());
+        float[] aux2 = capas[capas.length - 2].getSalidasCapa();
+        
+        for (int i = 0; i < outputs.length; i++) {
+            deltaSesgoExterna[i] = 2 * (outputs[i] - esperados[i]);
+            deltaSesgoExterna[i] *= aux[i];
+            for (int j = 0; j < deltaSesgoOculta.length; j++) {
+                deltaCapaExternaPesos[j][i] = deltaSesgoExterna[i] * aux2[j];
+            }
+        }
+        
+        aux = capas[capas.length - 2].getFuncion().derivada(capas[capas.length - 2].getPreActivaciones());
+        aux2 = inputs;
+        
+        for (int i = 0; i < deltaSesgoOculta.length; i++) {
+            float acumulador = 0;
+            float[][] pesos = capas[capas.length - 1].getPesos();
+            for (int k = 0; k < deltaSesgoExterna.length; k++) {
+                acumulador += deltaSesgoExterna[k] * pesos[i][k];
+            }
+            deltaSesgoOculta[i] = aux[i] * deltaSesgoExterna[i];
+            for (int j = 0; j < capas[0].getNumNeuronas(); j++) {
+                deltaCapaOcultaPesos[j][i] = deltaSesgoOculta[i] * aux2[j];
+            }
+        }
+        // Ahora se actualizan los pesos
+        // Primero el sesgo de la capa externa
+        float[] nuevoSesgo = new float[deltaSesgoExterna.length];
+        float[] sesgosViejos = capas[capas.length - 1].getBiases();
+        for (int i = 0; i < deltaSesgoExterna.length; i++) {
+            nuevoSesgo[i] = sesgosViejos[i] - tasaAprendizaje * deltaSesgoExterna[i];
+        }
+        capas[capas.length - 1].setBiases(nuevoSesgo);
+        // Ahora el sesgo de la capa oculta
+        nuevoSesgo = new float[deltaSesgoOculta.length];
+        sesgosViejos = capas[capas.length - 2].getBiases();
+        for (int i = 0; i < deltaSesgoOculta.length; i++) {
+            nuevoSesgo[i] = sesgosViejos[i] - tasaAprendizaje * deltaSesgoOculta[i];
+        }
+        capas[capas.length - 2].setBiases(nuevoSesgo);
+        // Ahora actualizamos los pesos
+        // Empezamos por los pesos que unen la capa oculta con la externa
+        float[][] nuevosPesos = new float[capas[capas.length - 2].getNumNeuronas()][capas[capas.length - 1].getNumNeuronas()];
+        float[][] viejosPesos = capas[capas.length - 2].getPesos();
+        for (int i = 0; i < nuevosPesos.length; i++) {
+            for (int j = 0; j < nuevosPesos[0].length; j++) {
+                nuevosPesos[i][j] = viejosPesos[i][j] - tasaAprendizaje * deltaCapaExternaPesos[i][j];
+            }
+        }
+        capas[capas.length - 2].setPesos(nuevosPesos);
+        // Ahora los pesos que unen la capa de entrada con la capa oculta
+        nuevosPesos = new float[capas[0].getNumNeuronas()][capas[capas.length - 2].getNumNeuronas()];
+        viejosPesos = capas[0].getPesos();
+        for (int i = 0; i < nuevosPesos.length; i++) {
+            for (int j = 0; j < nuevosPesos[0].length; j++) {
+                nuevosPesos[i][j] = viejosPesos[i][j] - tasaAprendizaje * deltaCapaOcultaPesos[i][j];
+            }
+        }
+        capas[0].setPesos(nuevosPesos);
     }
     
     public void asignarPesos() {

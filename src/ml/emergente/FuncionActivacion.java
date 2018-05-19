@@ -46,8 +46,22 @@ public class FuncionActivacion {
         return output;
     }
     
-    public float[] derivada() {
-        return new float[1];
+    public float[] derivada(float[] inputs) {
+        float[] output = new float[inputs.length];
+        for (int i = 0; i < inputs.length; i++) {
+            switch (tipo) {
+                case 1:
+                    output[i] = 1/(1 + (float) Math.exp(-inputs[i]));
+                    output[i] *= (1 + (1/(1 + (float) Math.exp(-inputs[i]))));
+                    break;
+                case 4:
+                    output[i] = 0;
+                    break;
+                default:
+                    output[i] = 0;
+            }
+        }
+        return output;
     }
     
 }

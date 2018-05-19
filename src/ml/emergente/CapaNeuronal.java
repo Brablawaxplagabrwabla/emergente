@@ -19,6 +19,7 @@ public class CapaNeuronal {
     private float[][] pesos;
     private float[] biases;
     private float[] salida;
+    private Neurona[] neuronas;
     
     private void menu() {
         System.out.println("Indique la función de activación para la capa: ");
@@ -36,13 +37,22 @@ public class CapaNeuronal {
             numNeuronas = sc.nextInt();
         } while(numNeuronas < 0);
         
+        neuronas = new Neurona[numNeuronas];
+
+        
+        for (int i = 0; i < numNeuronas; i++) {
+            neuronas[i] = new Neurona(0, 0);
+        }
+        
         int selecFun = 0;
         do {
             this.menu();
             selecFun = sc.nextInt();
         } while(selecFun < 0 || selecFun > 4);
         
-        funcion = new FuncionActivacion(selecFun);
+        if (numCapa > 0) {
+            funcion = new FuncionActivacion(selecFun);
+        }
     }
 
     public int getNumNeuronas() {
@@ -64,6 +74,26 @@ public class CapaNeuronal {
     public float[] getBiases() {
         return biases;
     }
+    
+    public float[] getPreActivaciones() {
+        float[] out = new float[numNeuronas];
+        for (int i = 0; i < out.length; i++) {
+            out[i] = neuronas[i].getPreActivacion();
+        }
+        return out;
+    }
+
+    public float[] getSalidasCapa() {
+        float[] out = new float[numNeuronas];
+        for (int i = 0; i < out.length; i++) {
+            out[i] = neuronas[i].getSalida();
+        }
+        return out;
+    }
+    
+    public Neurona[] getNeuronas() {
+        return neuronas;
+    }
 
     public float[] getSalida() {
         return salida;
@@ -71,6 +101,10 @@ public class CapaNeuronal {
 
     public void setBiases(float[] biases) {
         this.biases = biases;
+    }
+
+    public void setNeuronas(Neurona[] neuronas) {
+        this.neuronas = neuronas;
     }
 
     public void setPesos(float[][] pesos) {
