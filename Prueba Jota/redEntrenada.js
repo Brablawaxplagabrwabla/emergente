@@ -2,7 +2,7 @@ const { NeuralNetwork } = require('brain.js');
 const _ = require('lodash');
 const fs = require('fs');
 
-const raw = fs.readFileSync('./Data.csv', 'utf8').split('\n');
+const raw = fs.readFileSync('./DataCorregida.csv', 'utf8').split('\n');
 const headers = raw[0].split(',').map(header => header.replace(/'/g, ''));
 
 // Lectura
@@ -17,8 +17,10 @@ const data = raw.
      */
 
 
-    if (headers[i].includes('shoulderlength') || headers[i].includes('waistcircumference') || headers[i].includes('Weightlbs')){
+    if (headers[i].includes('shoulderlength') || headers[i].includes('Weightlbs')){
       cur[headers[i]] = parseFloat(v) / 1000;
+    } else if ( headers[i].includes('waistcircumference')) {
+      cur[headers[i]] = parseFloat(v) / 10000;
     } else if (headers[i].includes('Age') || headers[i].includes('Heightin') ) {
       cur[headers[i]] = parseFloat(v) / 100;
     } else {
@@ -60,7 +62,7 @@ console.log('Fin');
 // ------------------------------------------------------------------------------------------------
 
 // Probar aca muchachos 
-var output = net2.run({ shoulderlength: 0.141, waistcircumference: 0.1046, Age: 0.17, Heightin: 0.70, Weightlbs: 0.182 });  // Hombre ?
+var output = net2.run({ shoulderlength: 0.156, waistcircumference: 0.1163, Age: 0.45, Heightin: 0.63, Weightlbs: 0.195 });  // Hombre ?
 var gender_predicted = (output.Gender <= 0.5) ? "Masculino" : "Femenino" ;
 console.log("Genero : ", output );
 console.log("La persona es de género "+gender_predicted+" con un error medio de  "+ error / 2400);

@@ -2,7 +2,7 @@ const { NeuralNetwork } = require('brain.js');
 const _ = require('lodash');
 const fs = require('fs');
 
-const raw = fs.readFileSync('./Data.csv', 'utf8').split('\n');
+const raw = fs.readFileSync('./DataCorregida.csv', 'utf8').split('\n');
 const headers = raw[0].split(',').map(header => header.replace(/'/g, ''));
 
 // Lectura
@@ -18,8 +18,10 @@ const data = raw.
 
     // TODO: Al parecer hay circunferencias mayores a 1000, implica dividir entre 10000.
     // TODO: Hay datos tóxicos en la data, purgar todos los ceros o incongruencia que destruyen la red.
-    if (headers[i].includes('shoulderlength') || headers[i].includes('waistcircumference') || headers[i].includes('Weightlbs')){
+    if (headers[i].includes('shoulderlength') || headers[i].includes('Weightlbs')){
       cur[headers[i]] = parseFloat(v) / 1000;
+    } else if ( headers[i].includes('waistcircumference')) {
+      cur[headers[i]] = parseFloat(v) / 10000;
     } else if (headers[i].includes('Age') || headers[i].includes('Heightin') ) {
       cur[headers[i]] = parseFloat(v) / 100;
     } else {
@@ -43,7 +45,7 @@ const trainingData = data.
 
 console.log(trainingData[0]);
 
-console.log('entrenamiento finalizado', net.train(trainingData));
+console.log('Entrenamiento finalizado', net.train(trainingData));
 
 // -----------------------------------------------------------------------------------------------
 let error = 0;
