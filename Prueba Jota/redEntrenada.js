@@ -16,8 +16,7 @@ const data = raw.
      * Cambiar escala  0 y 1
      */
 
-    // TODO: Al parecer hay circunferencias mayores a 1000, implica dividir entre 10000.
-    // TODO: Hay datos tóxicos en la data, purgar todos los ceros o incongruencia que destruyen la red.
+
     if (headers[i].includes('shoulderlength') || headers[i].includes('waistcircumference') || headers[i].includes('Weightlbs')){
       cur[headers[i]] = parseFloat(v) / 1000;
     } else if (headers[i].includes('Age') || headers[i].includes('Heightin') ) {
@@ -28,7 +27,7 @@ const data = raw.
     return cur;
   }, {}));
 
-const net = new NeuralNetwork();
+
 const numTrainingData = 3641; // 60% de nuestra data
 
 console.log("Así queda el csv: ", data);
@@ -43,21 +42,25 @@ const trainingData = data.
 
 console.log(trainingData[0]);
 
-console.log('entrenamiento finalizado', net.train(trainingData));
-
 // -----------------------------------------------------------------------------------------------
+const net2 = new NeuralNetwork();
+net2.fromJSON(JSON.parse(fs.readFileSync('./net.json', 'utf8')));
+
 let error = 0;
 for (let i = 0; i < 2400; ++i) {
-  const { Gender } = net.run(_.omit(data[numTrainingData + i], ['Gender']));
+  const { Gender } = net2.run(_.omit(data[numTrainingData + i], ['Gender']));
   error += Math.abs(Gender - data[numTrainingData + i].Gender);
   console.log(i, Gender, data[numTrainingData + i].Gender);
 }
 
 console.log('Error absoluto medio', error / 2400);
-
 console.log('Fin');
+
 
 // ------------------------------------------------------------------------------------------------
 
-// Serializa la estructura para usar despes
-fs.writeFileSync('./net.json', JSON.stringify(net.toJSON(), null, '  '));
+// Probar aca muchachos 
+var output = net2.run({ shoulderlength: 0.141, waistcircumference: 0.1046, Age: 0.17, Heightin: 0.70, Weightlbs: 0.182 });  // Hombre ?
+var gender_predicted = (output.Gender <= 0.5) ? "Masculino" : "Femenino" ;
+console.log("Genero : ", output );
+console.log("La persona es de género "+gender_predicted+" con un error medio de  "+ error / 2400);
