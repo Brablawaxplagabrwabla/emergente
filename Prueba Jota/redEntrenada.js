@@ -49,20 +49,24 @@ const net2 = new NeuralNetwork();
 net2.fromJSON(JSON.parse(fs.readFileSync('./net.json', 'utf8')));
 
 let error = 0;
-for (let i = 0; i < 2400; ++i) {
+let error2 = 0;
+for (let i = 0; i < 2426; ++i) {
   const { Gender } = net2.run(_.omit(data[numTrainingData + i], ['Gender']));
   error += Math.abs(Gender - data[numTrainingData + i].Gender);
+  error2 += Math.pow((Gender - data[numTrainingData + i].Gender), 2);
   console.log(i, Gender, data[numTrainingData + i].Gender);
 }
 
-console.log('Error absoluto medio', error / 2400);
+console.log('Error absoluto medio', error / 2426);
+console.log('Error cuad´ratico medio', error2 / 2426);
 console.log('Fin');
 
 
 // ------------------------------------------------------------------------------------------------
 
 // Probar aca muchachos 
-var output = net2.run({ shoulderlength: 0.156, waistcircumference: 0.1163, Age: 0.45, Heightin: 0.63, Weightlbs: 0.195 });  // Hombre ?
+var output = net2.run({ shoulderlength: 0.152, waistcircumference: 0.1080, Age: 0.38, Heightin: 0.73, Weightlbs: 0.218 });  // Hombre ?
 var gender_predicted = (output.Gender <= 0.5) ? "Masculino" : "Femenino" ;
 console.log("Genero : ", output );
-console.log("La persona es de género "+gender_predicted+" con un error medio de  "+ error / 2400);
+console.log("La persona es de género "+gender_predicted+" con un error medio de  "+ error / 2427);
+console.log("Lo que tiene la ultima tupla segun el csv es : ", data[6066]);

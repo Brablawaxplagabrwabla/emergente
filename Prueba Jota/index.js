@@ -30,7 +30,11 @@ const data = raw.
     return cur;
   }, {}));
 
-const net = new NeuralNetwork();
+  var net = new NeuralNetwork({
+    activation: 'sigmoid', // activation function
+    hiddenLayers: [2],
+    learningRate: 0.3 // global learning rate, useful when training using streams
+  });;
 const numTrainingData = 3641; // 60% de nuestra data
 
 console.log("Así queda el csv: ", data);
