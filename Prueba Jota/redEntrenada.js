@@ -48,21 +48,31 @@ console.log(trainingData[0]);
 const net2 = new NeuralNetwork();
 net2.fromJSON(JSON.parse(fs.readFileSync('./net.json', 'utf8')));
 
-let error = 0;
-for (let i = 0; i < 2400; ++i) {
+let errorAbs = 0;
+let errorCudratico = 0;
+for (let i = 0; i < 2426; ++i) {
   const { Gender } = net2.run(_.omit(data[numTrainingData + i], ['Gender']));
-  error += Math.abs(Gender - data[numTrainingData + i].Gender);
-  console.log(i, Gender, data[numTrainingData + i].Gender);
+  errorCudratico += Math.pow((Gender - data[numTrainingData + i].Gender),2)
+  errorAbs += Math.abs(Gender - data[numTrainingData + i].Gender);
+  console.log(i, Gender, data[numTrainingData + i].Gender,  data[numTrainingData + i].waistcircumference );
+  if(i >= 2424) {
+    console.log(i, Gender, data[numTrainingData + i].Gender,  data[numTrainingData + i].waistcircumference );
+    let gender_predicted = (Gender <= 0.5) ? "Masculino" : "Femenino" ;
+    console.log("La persona es de género: "+gender_predicted);
+  }
+  
+
+  
 }
 
-console.log('Error absoluto medio', error / 2400);
+//var output = net2.run({ shoulderlength: 0.135, waistcircumference: 0.1077, Age: 0.39, Heightin: 0.66, Weightlbs: 0.195 });  // Hombre ?
+console.log('Error absoluto medio: ', errorAbs / 2426);
+console.log('Error cuadático medio: ', errorCudratico/2426);
 console.log('Fin');
 
 
 // ------------------------------------------------------------------------------------------------
 
 // Probar aca muchachos 
-var output = net2.run({ shoulderlength: 0.156, waistcircumference: 0.1163, Age: 0.45, Heightin: 0.63, Weightlbs: 0.195 });  // Hombre ?
-var gender_predicted = (output.Gender <= 0.5) ? "Masculino" : "Femenino" ;
-console.log("Genero : ", output );
-console.log("La persona es de género "+gender_predicted+" con un error medio de  "+ error / 2400);
+
+//console.log("La persona es de género "+gender_predicted+" con un error absoluto medio de  "+ errorAbs / 2428);
